@@ -1,61 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Laravel Multitenancy Starter
 
-## About Laravel
+A laravel starter application for the multitenant based application development
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Acknowledgements
 
-## Learning Laravel
+This starter application is based on `spatie multitenancy` package. Refer to this package for more information
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+ - [Spatie Multitenancy](https://spatie.be/docs/laravel-multitenancy/v4/introduction)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Automatically create, migrate and seed database and create directory for all tenants
+- Automatically switch database, caches, sessions and storage path for the specific tenant
+- Write code as you always write. No extra configurations needed.
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Get Started
 
-### Premium Partners
+Clone the starter project
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+  git clone https://github.com/pranaycb/laravel-multitenancy-starter
+```
 
-## Contributing
+Go to the project directory
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+  cd laravel-multitenancy-starter
+```
 
-## Code of Conduct
+Install composer dependencies
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+  Composer install
+```
 
-## Security Vulnerabilities
+Install npm dependencies (optional)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+  npm install
+```
 
-## License
+Start the server
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+  php artisan serve
+```
+
+
+## Configurations
+
+All the configurations related with the multitenancy are stored inside the `config/multitenancy.php` file. Please refer to the spatie multitenancy package for more information related to configuring the tenant.
+## Central Application
+
+Central application is the application from where all the tenant creation, subscription management are managed.
+
+### Central Routes
+
+Define all your central routes inside the `routes/web.php` directory 
+
+### Central Models
+
+Store all your central model inside `the app/Models/Central` directory. Also add the `Spatie\Multitenancy\Models\Concerns\UsesLandlordConnection` trait inside your model so that the package can identify the model as central model. Here is an example : 
+
+```php
+
+<?php
+
+namespace App\Models\Central;
+
+
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Multitenancy\Models\Concerns\UsesLandlordConnection;
+
+class Example extends Model
+{
+    use UsesLandlordConnection;
+
+    // properties and method
+
+}
+
+```
+
+### Central Controller
+
+Store all your central controllers inside the app/Controllers/Central directory.
+
+### Central Migration & Seeding
+
+Store all your central application migrations file inside the `database/migratios/central` directory. Run the below command to migrate to central database
+```bash
+php artisan migrate:fresh --path="database/migration/central" 
+```
+
+Optionally you can seed the central database. List all your central database seeder inside the `database/seeder/DatabaseSeeder.php` file's `runCentralSeeders` method and then run the below command:
+```bash
+php artisan db:seed
+```
+
+
+
+## Tenant Application
+
+Tenant application is the main application which all the tenant can access from the assigned domain.
+
+### Tenant Routes
+
+Define all your central routes inside the `routes/tenant.php` directory 
+
+### Tenant Models
+
+Store all your central model inside the `app/Models/Tenant` directory. Also add the `Spatie\Multitenancy\Models\Concerns\UsesTenantConnection` trait inside your model so that the package can identify the model as tenant model. Here is an example : 
+
+```php
+
+<?php
+
+namespace App\Models\Tenant;
+
+
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
+
+class Example extends Model
+{
+    use UsesTenantConnection;
+
+    // properties and method
+
+}
+
+```
+
+### Tenant Controller
+
+Store all your tenant controllers inside the app/Controllers/Tenant directory.
+
+### Tenant Migration & Seeding
+
+Store all your tenant migrations file inside the `database/migratios/Tenant` directory. Run the below command to migrate to all tenant databases
+```bash
+php artisan tenant:migrate" 
+```
+
+Optionally you can pass --seed flag to seed data to all tenant's database. List all your tenant database seeder inside the `database/seeder/DatabaseSeeder.php` file's `runTenantSeeders` method and then run the below command:
+```bash
+php artisan tenant:migrate --seed
+```
+
+Note: This will migrate and seed to all tenant databases. So migrate and seed data carefully.
+
+
+
+## Support
+
+For support, send me an email at pranaycb.ctg@gmail.com.
+
